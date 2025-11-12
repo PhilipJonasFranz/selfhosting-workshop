@@ -1,0 +1,58 @@
+services:
+  garage:
+    image: dxflrs/garage:v2.0.0
+    container_name: garage
+    volumes:
+      - ./config/garage.toml:/etc/garage.toml
+      - ./data/meta:/var/lib/garage/meta
+      - ./data/data:/var/lib/garage/data
+    restart: unless-stopped
+    networks:
+      - internal
+      - proxy
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.garage-s3.entrypoints=https"
+      - "traefik.http.routers.garage-s3.rule=Host(`s3.$MY_DOMAIN`)"
+      - "traefik.http.routers.garage-s3.priority=1000"
+      - "traefik.http.routers.garage-s3.tls=true"
+      - "traefik.http.routers.garage-s3.service=garage"
+      - "traefik.http.routers.garage-s3.middlewares=default-headers@file"
+      - "traefik.http.services.garage.loadbalancer.server.port=3900"
+      
+      - "traefik.docker.network=proxy"
+
+  webui:
+    image: khairul169/garage-webui:latest
+    container_name: garage-webui
+    restart: unless-stopped
+    volumes:
+      - ./config/garage.toml:/etc/garage.toml:ro
+    networks:
+      - internal
+      - proxy
+    environment:
+      API_BASE_URL: "http://garage:3903"
+      S3_ENDPOINT_URL: "http://garage:3900"
+      AUTH_USER_PASS: "CHANGE_ME" # ⚠️ htpasswd -nbBC 10 "<USERNAME>" "<PASSWORD>" | sed 's/\$/\$\$/g'
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.Garage.entrypoints=https"
+      - "traefik.http.routers.Garage.rule=Host(`garage.$MY_DOMAIN`)"
+      - "traefik.http.routers.Garage.priority=1000"
+      - "traefik.http.routers.Garage.tls=true"
+      - "traefik.http.routers.Pi-hole.tls.certresolver=cloudflare"
+      - "traefik.http.routers.Pi-hole.tls.domains[0].main=$MY_DOMAIN"
+      - "traefik.http.routers.Pi-hole.tls.domains[0].sans=*.$MY_DOMAIN"
+      - "traefik.http.routers.Garage.service=garage-webui"
+      - "traefik.http.routers.Garage.middlewares=default-headers@file"
+      - "traefik.http.services.garage-webui.loadbalancer.server.port=3909"
+      
+      - "traefik.docker.network=proxy"
+
+networks:
+  internal:
+  proxy:
+    external: true

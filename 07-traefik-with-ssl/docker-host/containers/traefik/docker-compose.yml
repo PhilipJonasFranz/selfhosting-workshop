@@ -1,0 +1,51 @@
+services:
+  trafficjam:
+    container_name: trafficjam
+    image: kaysond/trafficjam
+    cap_add:
+      - NET_ADMIN
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      NETWORK: proxy
+      WHITELIST_FILTER: ancestor=traefik:latest
+      TZ: Europe/Berlin
+  
+  traefik:
+    image: traefik
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - CF_API_EMAIL=CHANGE_ME # ⚠️
+      - CF_DNS_API_TOKEN=CHANGE_ME # ⚠️
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/traefik.yml:/traefik.yml:ro
+      - ./config/config.yml:/config.yml:ro
+      - ./data/acme.json:/acme.json
+      - ./data/logs:/var/log/traefik
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.Traefik.entrypoints=https"
+      - "traefik.http.routers.Traefik.rule=Host(`traefik.$MY_DOMAIN`)"
+      - "traefik.http.routers.Traefik.priority=1000"
+      - "traefik.http.routers.Traefik.tls=true"
+      - "traefik.http.routers.Traefik.tls.certresolver=cloudflare"
+      - "traefik.http.routers.Traefik.tls.domains[0].main=$MY_DOMAIN"
+      - "traefik.http.routers.Traefik.tls.domains[0].sans=*.$MY_DOMAIN"
+      - "traefik.http.routers.Traefik.service=api@internal"
+      
+networks:
+  proxy:
+    external: true

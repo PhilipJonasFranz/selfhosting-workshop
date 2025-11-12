@@ -1,0 +1,28 @@
+services:
+  traefik:
+    image: traefik
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - CF_API_EMAIL=CHANGE_ME # ⚠️
+      - CF_DNS_API_TOKEN=CHANGE_ME # ⚠️
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/traefik.yml:/traefik.yml:ro
+      - ./config/config.yml:/config.yml:ro
+      - ./data/acme.json:/acme.json
+      - ./data/logs:/var/log/traefik
+    labels:
+      - "traefik.enable=true"
+
+networks:
+  proxy:
+    external: true

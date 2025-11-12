@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: docmost
+      POSTGRES_USER: docmost
+      POSTGRES_PASSWORD: CHANGE_ME # ⚠️ openssl rand -hex 64
+    restart: unless-stopped
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    networks:
+      - internal
+
+  redis:
+    image: redis:7.2-alpine
+    restart: unless-stopped
+    volumes:
+      - ./data/redis:/data
+    networks:
+      - internal
+  
+  docmost:
+    image: docmost/docmost:latest
+    depends_on:
+      - db
+      - redis
+    environment:
+      APP_URL: 'https://docmost.$MY_DOMAIN'
+      APP_SECRET: 'CHANGE_ME' # ⚠️ openssl rand -hex 64
+      DATABASE_URL: 'postgresql://docmost:<POSTGRES_PASSWORD>@db:5432/docmost?schema=public' # ⚠️ set password to value of POSTGRES_PASSWORD from below
+      REDIS_URL: 'redis://redis:6379'
+    user: "1000:1000"
+    restart: unless-stopped
+    volumes:
+      - ./data/docmost:/app/data/storage
+    networks:
+      - internal
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      
+      - "traefik.http.routers.Docmost.entrypoints=https"
+      - "traefik.http.routers.Docmost.rule=Host(`docmost.$MY_DOMAIN`)"
+      - "traefik.http.routers.Docmost.priority=1000"
+      - "traefik.http.routers.Docmost.tls=true"
+      - "traefik.http.routers.Docmost.service=docmost"
+      - "traefik.http.routers.Docmost.middlewares=default-headers@file"
+      - "traefik.http.services.docmost.loadbalancer.server.port=3000"
+      
+      - "traefik.docker.network=proxy"
+
+networks:
+  internal:
+  proxy:
+    external: true

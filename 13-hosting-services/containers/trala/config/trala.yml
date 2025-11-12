@@ -1,0 +1,34 @@
+# TraLa Configuration File
+# Version 2.0
+
+version: 2.0
+
+environment:
+  refresh_interval_seconds: 30
+  log_level: info
+  traefik:
+    api_host: http://traefik:8081
+    enable_basic_auth: true
+    basic_auth:
+      username: CHANGE_ME # ⚠️
+      password: CHANGE_ME # ⚠️
+
+services:
+  overrides:
+    - service: "Traefik-Log" # Should match the Traefik router name
+      icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/traefik.png
+
+  exclude:
+    - internal-api
+    - Authelia
+    - trala
+
+  # Specify additional services manually that are not on same Docker host as Traefik instance
+  manual:
+    - name: "Garage"
+      url: "https://garage.opnlab.org"
+      icon: "https://cdn.jsdelivr.net/gh/selfhst/icons/svg/garage.svg"
+
+    - name: "Pi-hole"
+      url: "https://dns.opnlab.org/admin"
+      icon: "https://cdn.jsdelivr.net/gh/selfhst/icons/svg/pi-hole.svg"

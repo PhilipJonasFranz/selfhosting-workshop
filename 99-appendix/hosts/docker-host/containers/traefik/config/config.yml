@@ -1,0 +1,27 @@
+http:
+  middlewares:
+    authelia:
+      forwardAuth:
+        address: "http://authelia:9091/api/verify?rd=https://auth.$MY_DOMAIN"
+        authResponseHeaders: Remote-User,Remote-Groups,Remote-Name,Remote-Email
+        trustForwardHeader: true
+
+    default-headers:
+      headers:
+        frameDeny: true
+        sslRedirect: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        customFrameOptionsValue: SAMEORIGIN
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+    secured-internal:
+      chain:
+        middlewares:
+        - authelia
+        - default-headers

@@ -1,0 +1,22 @@
+services:
+  cloudflare-ddns-root:
+    image: oznu/cloudflare-ddns:latest
+    container_name: cloudflare-ddns-root
+    restart: always
+    environment:
+      - API_KEY=${CLOUDFLARE_API_KEY}
+      - ZONE=${DOMAIN}
+      # Enable DNS proxy to proxy traffic through cloudflare. Can be useful to hide own public IP and protect against attacks
+      - PROXIED=${ENABLE_PROXY}
+
+  cloudflare-ddns-wcard:
+    image: oznu/cloudflare-ddns:latest
+    container_name: cloudflare-ddns-wcard
+    restart: always
+    environment:
+      - API_KEY=${CLOUDFLARE_API_KEY}
+      - ZONE=${DOMAIN}
+      # Create DNS record for *.mydomain.tld. Automatically resolves all DNS queries for subdomain to same IP.
+      - SUBDOMAIN=*
+      # Enable DNS proxy to proxy traffic through cloudflare. Can be useful to hide own public IP and protect against attacks
+      - PROXIED=${ENABLE_PROXY}

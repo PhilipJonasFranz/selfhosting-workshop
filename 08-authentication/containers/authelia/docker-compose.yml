@@ -1,0 +1,27 @@
+services:
+  authelia:
+    image: authelia/authelia
+    container_name: authelia
+    volumes:
+      - ./config:/config
+    networks:
+      - proxy
+    labels:
+      - 'traefik.enable=true'
+
+      - 'traefik.http.routers.Authelia.rule=Host(`auth.$MY_DOMAIN`)'
+      - "traefik.http.routers.Authelia.priority=1000"
+      - 'traefik.http.routers.Authelia.entrypoints=https'
+      - 'traefik.http.routers.Authelia.tls=true'
+      - "traefik.http.routers.Authelia.middlewares=default-headers@file"
+
+      - "traefik.docker.network=proxy"
+    expose:
+      - 9091
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Berlin
+
+networks:
+  proxy:
+    external: true

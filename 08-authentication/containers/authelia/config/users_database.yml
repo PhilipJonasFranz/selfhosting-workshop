@@ -1,0 +1,14 @@
+---
+###############################################################
+#                         Users Database                      #
+###############################################################
+
+users:
+  example_user: # ⚠️ Change to rename the user
+    displayname: "CHANGE_ME" # ⚠️ Change to actual user name
+    # Generate password hash with:
+    # sudo docker run --rm -it authelia/authelia:latest authelia crypto hash generate argon2
+    password: "CHANGE_ME" # ⚠️
+    email: CHANGE_ME # ⚠️
+    groups:
+      - admins

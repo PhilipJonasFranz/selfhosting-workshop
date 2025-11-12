@@ -1,0 +1,21 @@
+services:
+  drawio:
+    image: jgraph/drawio
+    container_name: drawio
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.draw-io.entrypoints=http"
+      - "traefik.http.routers.draw-io.rule=Host(`draw.vlab.local`)"
+      - "traefik.http.routers.draw-io.priority=1000"
+      - "traefik.http.routers.draw-io.service=drawio"
+      - "traefik.http.services.drawio.loadbalancer.server.port=8080"
+      
+      - "traefik.docker.network=proxy"
+
+networks:
+  proxy:
+    external: true

@@ -1,0 +1,11 @@
+/path/to/containers/traefik/data/logs/access.log { # ⚠️ must match path of logfiles
+    daily
+    maxsize 100M
+    rotate 5
+    compress
+    missingok
+    notifempty
+    postrotate
+      docker exec traefik kill -USR1 1
+    endscript
+}

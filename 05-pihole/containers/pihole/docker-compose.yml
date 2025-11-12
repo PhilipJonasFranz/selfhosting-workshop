@@ -1,0 +1,43 @@
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:2025.10.3
+    ports:
+      - "5353:53/tcp" # ⚠️ change to 53 after initial start
+      - "5353:53/udp" # ⚠️ change to 53 after initial start
+      - "80:80/tcp"
+    environment:
+      TZ: "Europe/Berlin"
+      FTLCONF_webserver_api_password: "CHANGE_ME" # ⚠️
+      FTLCONF_dns_upstreams: "unbound#53" # Sets unbound as upstream DNS. In Pi-hole Web-UI, 
+                                          # see Settings > DNS > Custom DNS Servers
+      FTLCONF_dns_listeningMode: "ALL"    # Sets interface settings to permit all origins.
+                                          # See Settings > DNS > Interface Settings in advanced mode
+      FTLCONF_misc_etc_dnsmasq_d: "true"  # Enables loading of custom dnsmasq configs
+    volumes:
+      - ./config/pihole:/etc/pihole
+      - ./config/dnsmasq:/etc/dnsmasq.d
+    restart: unless-stopped
+    networks:
+      - internal
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - CAP_SYS_NICE
+      - CAP_SYS_TIME
+    security_opt:
+      - seccomp:unconfined
+    depends_on:
+      - unbound
+
+  unbound:
+    container_name: unbound
+    image: klutchell/unbound:latest
+    volumes:
+      - ./config/unbound:/etc/unbound/custom.conf.d
+    restart: unless-stopped
+    networks:
+      - internal
+
+networks:
+  internal:

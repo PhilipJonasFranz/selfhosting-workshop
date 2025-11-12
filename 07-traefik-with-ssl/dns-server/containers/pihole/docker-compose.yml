@@ -1,0 +1,59 @@
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:2025.10.3
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    #  - "80:80/tcp" # were handling the web-ui via Traefik now
+    environment:
+      TZ: "Europe/Berlin"
+      FTLCONF_webserver_api_password: "CHANGE_ME" # ⚠️
+      FTLCONF_dns_upstreams: "unbound#53"
+      FTLCONF_dns_listeningMode: "ALL"
+      FTLCONF_misc_etc_dnsmasq_d: "true"
+    volumes:
+      - ./config/pihole:/etc/pihole
+      - ./config/dnsmasq:/etc/dnsmasq.d
+    restart: unless-stopped
+    networks:
+      - internal
+      - proxy
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - CAP_SYS_NICE
+      - CAP_SYS_TIME
+    security_opt:
+      - seccomp:unconfined
+    depends_on:
+      - unbound
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.Pi-hole.entrypoints=https"
+      - "traefik.http.routers.Pi-hole.rule=Host(`dns.$MY_DOMAIN`)"
+      - "traefik.http.routers.Pi-hole.priority=1000"
+      - "traefik.http.routers.Pi-hole.tls=true"
+      - "traefik.http.routers.Pi-hole.tls.certresolver=cloudflare"
+      - "traefik.http.routers.Pi-hole.tls.domains[0].main=$MY_DOMAIN"
+      - "traefik.http.routers.Pi-hole.tls.domains[0].sans=*.$MY_DOMAIN"
+      - "traefik.http.routers.Pi-hole.service=pihole"
+      - "traefik.http.routers.Pi-hole.middlewares=default-headers@file"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
+
+      - "traefik.docker.network=proxy"
+
+  unbound:
+    container_name: unbound
+    image: klutchell/unbound:latest
+    volumes:
+      - ./config/unbound:/etc/unbound/custom.conf.d
+    restart: unless-stopped
+    networks:
+      - internal
+
+networks:
+  internal:
+  proxy:
+    external: true

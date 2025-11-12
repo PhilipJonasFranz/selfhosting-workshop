@@ -1,0 +1,93 @@
+services:
+  # GeoIP auto update
+  geoipupdate:
+    image: maxmindinc/geoipupdate
+    container_name: geoipupdate
+    restart: unless-stopped
+    environment:
+      GEOIPUPDATE_ACCOUNT_ID: CHANGE_ME # ⚠️ should be a number, see MaxMind Account Information tab
+      GEOIPUPDATE_LICENSE_KEY: CHANGE_ME # ⚠️ Replace with obtained MaxMind license key
+      GEOIPUPDATE_EDITION_IDS: "GeoLite2-City GeoLite2-Country"
+      GEOIPUPDATE_FREQUENCY: 168  # Update weekly
+    volumes:
+      - ./data/geoip:/usr/share/GeoIP
+  
+  # Traefik Log Dashboard Agent
+  traefik-agent:
+    image: hhftechnology/traefik-log-dashboard-agent:dev-dashboard
+    container_name: traefik-log-dashboard-agent
+    restart: unless-stopped
+    volumes:
+      - /path/to/containers/traefik/data/logs:/logs:ro # ⚠️ update the path to point to the Traefik logs directory
+      - ./data/geoip:/geoip:ro  # MaxMind GeoIP databases
+      - ./data/positions:/data
+    environment:
+      # Log Paths
+      - TRAEFIK_LOG_DASHBOARD_ACCESS_PATH=/logs/access.log
+      
+      # Authentication
+      - TRAEFIK_LOG_DASHBOARD_AUTH_TOKEN=CHANGE_ME # ⚠️ openssl rand -hex 32
+      
+      # GeoIP Configuration
+      - TRAEFIK_LOG_DASHBOARD_GEOIP_ENABLED=true
+      - TRAEFIK_LOG_DASHBOARD_GEOIP_CITY_DB=/geoip/GeoLite2-City.mmdb
+      - TRAEFIK_LOG_DASHBOARD_GEOIP_COUNTRY_DB=/geoip/GeoLite2-Country.mmdb
+      
+      # System Monitoring
+      - TRAEFIK_LOG_DASHBOARD_SYSTEM_MONITORING=true
+      
+      # Log Format
+      - TRAEFIK_LOG_DASHBOARD_LOG_FORMAT=json
+      
+      # Server Port
+      - PORT=5000
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/logs/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - internal
+
+  # Traefik Log Dashboard - Next.js web UI
+  traefik-log:
+    image: hhftechnology/traefik-log-dashboard:dev-dashboard
+    container_name: traefik-log-dashboard
+    restart: unless-stopped
+    user: "1001:1001"
+    volumes:
+      - ./data/dashboard:/app/data
+    environment:
+      # Agent Configuration
+      - AGENT_API_URL=http://traefik-agent:5000
+      - AGENT_API_TOKEN=CHANGE_ME # ⚠️ Must match TRAEFIK_LOG_DASHBOARD_AUTH_TOKEN from above
+      - AGENT_NAME=Internal Instance
+      
+      # Node Environment
+      - NODE_ENV=production
+      - PORT=3000
+    depends_on:
+      traefik-agent:
+        condition: service_healthy
+    networks:
+      - internal
+      - proxy
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.Traefik-Log.entrypoints=https"
+      - "traefik.http.routers.Traefik-Log.rule=Host(`traefik-log.$MY_DOMAIN`)"
+      - "traefik.http.routers.Traefik-Log.priority=1000"
+      - "traefik.http.routers.Traefik-Log.tls=true"
+      - "traefik.http.routers.Traefik-Log.service=traefik-log"
+      - "traefik.http.routers.Traefik-Log.middlewares=secured-internal@file"
+
+      - "traefik.http.services.traefik-log.loadbalancer.server.port=3000"
+      
+      - "traefik.docker.network=proxy"
+
+networks:
+  internal:
+  proxy:
+    external: true

@@ -1,0 +1,78 @@
+services:
+  wg-easy:
+    image: ghcr.io/wg-easy/wg-easy:15
+    container_name: wg-easy
+    restart: unless-stopped
+    ports:
+      - "51820:51820/udp"
+    networks:
+      wg:
+        ipv4_address: 172.16.5.2
+      proxy:
+    volumes:
+      - ./data:/etc/wireguard
+      - /lib/modules:/lib/modules:ro
+    environment:
+      # Web-UI settings
+      - PORT=80
+
+      # Wireguard Settings
+      - DISABLE_IPV6=true
+      - WG_ALLOWED_IPS=0.0.0.0/0 # full tunnel, change to home network subnet for split tunnel
+      # ⚠️ adjust the subnet to the subnet of your home network below, e.g. 192.168.178.0/24 -> 10.0.0.0/8
+      - |
+        WG_PRE_UP=
+          # Tells the container how to reach your home network subnet (192.168.178.0/24).
+          # Traffic is sent to the 'wg' Docker network gateway (172.16.5.1) via eth1.
+          ip route add 192.168.178.0/24 via 172.16.5.1 dev eth1;
+          
+          # Masquerades (NATs) all traffic from the VPN client subnet (10.42.0.0/24).
+          # This makes outgoing packets appear to come from the container's IP.
+          iptables -t nat -A POSTROUTING -s 10.42.0.0/24 -j MASQUERADE;
+          
+          # Allows all new and existing traffic from the VPN subnet to be forwarded.
+          iptables -I FORWARD -s 10.42.0.0/24 -j ACCEPT;
+          
+          # Allows established and related traffic to the VPN subnet.
+          iptables -I FORWARD -d 10.42.0.0/24 -m state --state ESTABLISHED,RELATED -j ACCEPT;
+
+      # Unattended setup settings
+      - INIT_ENABLED=true
+      - INIT_USERNAME=CHANGE_ME # ⚠️
+      - INIT_PASSWORD=CHANGE_ME # ⚠️
+      - INIT_HOST=vpn.$MY_DOMAIN
+      - INIT_PORT=51820
+      - INIT_DNS=CHANGE_ME # ⚠️ set to IP of Pi-hole
+      - INIT_IPV4_CIDR=10.42.0.0/24 # ⚠️ ensure subnet is not used somewhere else. If you change it, also update WG_PRE_UP variable!
+      - INIT_IPV6_CIDR=fdcc:ad94:bacf:61a4::/64 # required so that the IPv4 CIDR is applied, value is irrelevant
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+      # - NET_RAW # ⚠️ Uncomment if using Podman
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv6.conf.all.disable_ipv6=1
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.Wireguard.entrypoints=https"
+      - "traefik.http.routers.Wireguard.rule=Host(`vpn.$MY_DOMAIN`)"
+      - "traefik.http.routers.Wireguard.priority=1000"
+      - "traefik.http.routers.Wireguard.tls=true"
+      - "traefik.http.routers.Wireguard.service=wg-easy"
+      - "traefik.http.routers.Wireguard.middlewares=default-headers@file"
+      - "traefik.http.services.wg-easy.loadbalancer.server.port=80"
+      
+      - "traefik.docker.network=proxy"
+
+networks:
+  proxy:
+    external: true
+  wg:
+    driver: bridge
+    enable_ipv6: false
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.5.0/24

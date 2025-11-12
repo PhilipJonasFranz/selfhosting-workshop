@@ -1,0 +1,58 @@
+---
+###############################################################
+#                   Authelia configuration                    #
+###############################################################
+
+server:
+  host: 0.0.0.0
+  port: 9091
+
+log:
+  level: info
+
+theme: dark
+
+jwt_secret: CHANGE_ME # ⚠️ openssl rand -hex 64
+default_redirection_url: https://auth.$MY_DOMAIN
+
+totp:
+  issuer: authelia.com
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+
+access_control:
+  default_policy: deny
+  rules:
+    - domain: '$MY_DOMAIN'
+      policy: one_factor
+      subject:
+        - ["group:admins"]
+    
+    - domain: '*.$MY_DOMAIN'
+      policy: one_factor
+      subject:
+        - ["group:admins"]
+
+session:
+  name: authelia_session # Name of the session cookie. Ensure this is unique 
+                         # if using multiple Authelia instances!
+  secret: CHANGE_ME # ⚠️ openssl rand -hex 64
+  expiration: 3600  # 1 hour
+  inactivity: 900  # 5 minutes
+  domain: $MY_DOMAIN
+
+regulation:
+  max_retries: 3
+  find_time: 120
+  ban_time: 300
+
+storage:
+  encryption_key: CHANGE_ME # ⚠️ openssl rand -hex 64
+  local:
+    path: /config/db.sqlite3
+
+notifier:
+  filesystem:
+    filename: /config/notification.txt

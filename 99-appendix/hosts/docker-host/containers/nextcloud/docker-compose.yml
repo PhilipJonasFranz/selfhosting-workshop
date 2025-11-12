@@ -1,0 +1,85 @@
+services:
+  db:
+    image: postgres:15.2
+    container_name: nextcloud-postgres
+    restart: always
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD=CHANGE_ME # ⚠️ openssl rand -hex 64
+    networks:
+      - internal
+
+  redis:
+    image: redis:latest
+    container_name: nextcloud-redis
+    restart: always
+    networks:
+      - internal
+    volumes:
+      - ./data/redis:/var/lib/redis
+
+  cron:
+    image: nextcloud
+    container_name: nextcloud-cron
+    restart: always
+    volumes:
+      - ./data/nextcloud:/var/www/html
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+      - redis
+    networks:
+      - internal
+
+  nextcloud:
+    image: nextcloud
+    container_name: nextcloud
+    restart: always
+    environment:
+      # Postgres
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD=<POSTGRES_PASSWORD> # ⚠️ set to db password generated above
+
+      # Redis
+      - REDIS_HOST=redis
+
+      # Admin Credentials
+      #- NEXTCLOUD_ADMIN_USER=CHANGE_ME # ⚠️
+      #- NEXTCLOUD_ADMIN_PASSWORD=CHANGE_ME # ⚠️
+
+      - NEXTCLOUD_TRUSTED_DOMAINS=files.$MY_DOMAIN
+
+      # Required, must match the subnet of the 'proxy' network
+      - TRUSTED_PROXIES=172.18.0.0/16
+      - OVERWRITEPROTOCOL=https
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./data/nextcloud:/var/www/html
+      - ./config/php.ini:/usr/local/etc/php/conf.d/zzz-custom.ini
+    networks:
+      - internal
+      - proxy
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.Nextcloud.entrypoints=https"
+      - "traefik.http.routers.Nextcloud.rule=Host(`files.$MY_DOMAIN`)"
+      - "traefik.http.routers.Nextcloud.priority=1000"
+      - "traefik.http.routers.Nextcloud.tls=true"
+      - "traefik.http.routers.Nextcloud.service=nextcloud"
+      - "traefik.http.routers.Nextcloud.middlewares=default-headers@file"
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
+      
+      - "traefik.docker.network=proxy"
+
+networks:
+  proxy:
+    external: true
+  internal:

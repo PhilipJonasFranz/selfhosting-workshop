@@ -33,7 +33,7 @@ services:
       - "traefik.enable=true"
 
       - "traefik.http.routers.Traefik.entrypoints=http"
-      - "traefik.http.routers.Traefik.rule=Host(`traefik.vlab.local`)"
+      - "traefik.http.routers.Traefik.rule=Host(`traefik.vlab.lan`)"
       - "traefik.http.routers.Traefik.service=api@internal"
       
 networks:

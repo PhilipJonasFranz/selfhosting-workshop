@@ -9,7 +9,7 @@ services:
       - "traefik.enable=true"
 
       - "traefik.http.routers.draw-io.entrypoints=http"
-      - "traefik.http.routers.draw-io.rule=Host(`draw.vlab.local`)"
+      - "traefik.http.routers.draw-io.rule=Host(`draw.vlab.lan`)"
       - "traefik.http.routers.draw-io.priority=1000"
       - "traefik.http.routers.draw-io.service=drawio"
       - "traefik.http.services.drawio.loadbalancer.server.port=8080"

@@ -46,7 +46,7 @@ services:
       - "traefik.enable=true"
 
       - "traefik.http.routers.Traefik.entrypoints=http"
-      - "traefik.http.routers.Traefik.rule=Host(`traefik.vlab.local`)"
+      - "traefik.http.routers.Traefik.rule=Host(`traefik.vlab.lan`)"
       - "traefik.http.routers.Traefik.service=api@internal"
       
 networks:
@@ -72,11 +72,11 @@ labels:
     - "traefik.enable=true"
 
     - "traefik.http.routers.Traefik.entrypoints=http"
-    - "traefik.http.routers.Traefik.rule=Host(`traefik.vlab.local`)"
+    - "traefik.http.routers.Traefik.rule=Host(`traefik.vlab.lan`)"
     - "traefik.http.routers.Traefik.service=api@internal"
 ```
 
-First, we enable Traefik on this container. Then, we define a router for the compose service `traefik`, with the entrypoint `http`. We then match all requests for the host `traefik.vlabl.local` and route these requests to the service `api@internal`, which is a special kind of service that is built into Traefik.
+First, we enable Traefik on this container. Then, we define a router for the compose service `traefik`, with the entrypoint `http`. We then match all requests for the host `traefik.vlabl.lan` and route these requests to the service `api@internal`, which is a special kind of service that is built into Traefik.
 
 The entrypoint `http` is defined in the `traefik.yml` configuration file:
 
@@ -86,7 +86,7 @@ entryPoints:
     address: ":80"
 ```
 
-Start the Compose stack for Traefik. You should be able to visit `http://traefik.vlab.local`. Note that we created the DNS records for `*.vlab.local` previously in the Pi-hole `config/dnsmasq/03-wildcard-record.conf` file.
+Start the Compose stack for Traefik. You should be able to visit `http://traefik.vlab.lan`. Note that we created the DNS records for `*.vlab.lan` previously in the Pi-hole `config/dnsmasq/03-wildcard-record.conf` file.
 
 # Adding Services
 
@@ -106,7 +106,7 @@ To let Traefik proxy additional services, we must add the corresponding labels t
 +      - "traefik.enable=true"
 +
 +      - "traefik.http.routers.draw-io.entrypoints=http"
-+      - "traefik.http.routers.draw-io.rule=Host(`draw.vlab.local`)"
++      - "traefik.http.routers.draw-io.rule=Host(`draw.vlab.lan`)"
 +      - "traefik.http.routers.draw-io.priority=1000"
 +      - "traefik.http.services.drawio.loadbalancer.server.port=8080"
 +
@@ -129,7 +129,7 @@ Looking at the labels, there is one key difference between the labels for Traefi
 - "traefik.http.services.drawio.loadbalancer.server.port=8080"
 ```
 
-This label tells Traefik where it 'finds' the proxied service, by specifying that the service is reachable on the container port `8080`. Hence, all requests to the host `draw.vlab.local` will now be proxied to the container `drawio` on port `8080`.
+This label tells Traefik where it 'finds' the proxied service, by specifying that the service is reachable on the container port `8080`. Hence, all requests to the host `draw.vlab.lan` will now be proxied to the container `drawio` on port `8080`.
 
 ## Proxying External Services
 
@@ -143,7 +143,7 @@ http:
     my-external-service: # ensure this is unique when adding others
       entryPoints:
         - "https"
-      rule: "Host(`my-external-service.vlab.local`)"
+      rule: "Host(`my-external-service.vlab.lan`)"
       middlewares:
         - default-headers
       tls: {}

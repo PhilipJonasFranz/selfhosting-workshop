@@ -39,13 +39,13 @@ The following instructions are based on [this](https://ronamosa.io/docs/engineer
 
 To start, copy over all of the files for Pi-hole to the server. Run the setup script with `bash setup.sh`. This script also downloads a file `root.hints`, which lists the IP addresses of the root servers that Unbound should use.
 
-Since our Pi-hole has to resolve DNS queries for our domain, we create a custom `dnsmasq` configuration. For the following chapter, we will be using `vlab.local` as the domain. Later, we will update this to a public domain name. In the file `03-wildcard-record.conf`, edit the Placeholder IP address to the IP address of your Docker server where Traefik is running. The contents of the file should look like this:
+Since our Pi-hole has to resolve DNS queries for our domain, we create a custom `dnsmasq` configuration. For the following chapter, we will be using `vlab.lan` as the domain. Later, we will update this to a public domain name. In the file `03-wildcard-record.conf`, edit the Placeholder IP address to the IP address of your Docker server where Traefik is running. The contents of the file should look like this:
 
 ```
-address=/.vlab.local/192.168.178.123
+address=/.vlab.lan/192.168.178.123
 ```
 
-This entry creates a wildcard DNS record for `*.vlab.local`, which resolves to the associated IP address. When Pi-hole has to resolve a DNS query, it first queries its local DNS records, which can be created in the web UI. If no match is found, the custom configurations of `dnsmasq` are checked. If still no match can be found, Unbound will be queried.
+This entry creates a wildcard DNS record for `*.vlab.lan`, which resolves to the associated IP address. When Pi-hole has to resolve a DNS query, it first queries its local DNS records, which can be created in the web UI. If no match is found, the custom configurations of `dnsmasq` are checked. If still no match can be found, Unbound will be queried.
 
 The wildcard record we created above will result in all queries for our domain being resolved to the IP address of the Docker server running Traefik. If we need to override the wildcard, we can still create a local DNS entry in the Pi-hole web UI.
 
@@ -90,11 +90,11 @@ Should result in:
 [1762205728] unbound[1:0] info: response for hey.it.works. A IN
 ```
 
-Also, ensure that DNS resolution for `*.vlab.local` is working:
+Also, ensure that DNS resolution for `*.vlab.lan` is working:
 
 ```bash
-dig vlab.local
-dig wildcard-record.vlab.local
+dig vlab.lan
+dig wildcard-record.vlab.lan
 ```
 
 Both queries should return the IP address of the Docker server.

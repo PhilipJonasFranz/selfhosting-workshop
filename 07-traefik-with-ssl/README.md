@@ -26,10 +26,10 @@ Now with a basic understanding, we can see that there are two things required to
 
 # Updating Pi-hole Wildcard DNS resolution
 
-We previously used the domain `vlab.local` for Traefik. Now that we use a real domain, we have to update the wildcard DNS record in Pi-hole such that DNS resolution works for the domain: edit the `config/dnsmasq/03-wildcard.conf` configuration of Pi-hole and modify the contents:
+We previously used the domain `vlab.lan` for Traefik. Now that we use a real domain, we have to update the wildcard DNS record in Pi-hole such that DNS resolution works for the domain: edit the `config/dnsmasq/03-wildcard.conf` configuration of Pi-hole and modify the contents:
 
 ```diff
--address=/.vlab.local/<Docker Server IP>
+-address=/.vlab.lan/<Docker Server IP>
 +address=/.$MY_DOMAIN/<Docker Server IP>
 ```
 
@@ -140,7 +140,7 @@ Finally, we modify the `docker-compose.yml` for the Traefik stack. We add port `
        - "traefik.enable=true"
  
 -      - "traefik.http.routers.Traefik.entrypoints=http"
--      - "traefik.http.routers.Traefik.rule=Host(`traefik.vlab.local`)"
+-      - "traefik.http.routers.Traefik.rule=Host(`traefik.vlab.lan`)"
 +      - "traefik.http.routers.Traefik.entrypoints=https"
 +      - "traefik.http.routers.Traefik.rule=Host(`traefik.$MY_DOMAIN`)"
 +      - "traefik.http.routers.Traefik.priority=1000"
@@ -202,7 +202,7 @@ With Traefik now able to serve HTTPS requests, we need to update the labels for 
    - "traefik.enable=true"
 
 -  - "traefik.http.routers.draw-io.entrypoints=http"
--  - "traefik.http.routers.draw-io.rule=Host(`draw.vlab.local`)"
+-  - "traefik.http.routers.draw-io.rule=Host(`draw.vlab.lan`)"
 +  - "traefik.http.routers.draw-io.entrypoints=https"
 +  - "traefik.http.routers.draw-io.rule=Host(`draw.$MY_DOMAIN`)"
    - "traefik.http.routers.draw-io.priority=1000"

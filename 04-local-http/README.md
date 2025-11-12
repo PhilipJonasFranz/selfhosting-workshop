@@ -1,7 +1,7 @@
 In this section, we will run a straightforward web application with Docker over HTTP. There are two ways you can reach a service over the network:
 
 - by directly accessing the server's IP address and optionally the port the service is running on, e.g., `http://192.168.178.5:8080`
-- by accessing a hostname or domain name that gets resolved to the IP of the server the service is running on, and optionally the port the service is running on, e.g., `http://homeserver.local:8080`
+- by accessing a hostname or domain name that gets resolved to the IP of the server the service is running on, and optionally the port the service is running on, e.g., `http://homeserver.lan:8080`
 
 For this step, we will focus on the first access method. In the next step, we will set up a DNS server and custom records to access the service via its DNS name.
 

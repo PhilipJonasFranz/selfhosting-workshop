@@ -8,15 +8,12 @@ There are multiple ways to set up DDNS. We will demonstrate two in this section.
 
 The first method is to use a small program that updates the IP address for you, like the `oznu/cloudflare-ddns` Docker container. This container is specific to Cloudflare; if you have a different public DNS provider, you will have to look for alternatives.
 
-The container has a small environment file:
+The container must be configured with a few variables:
 
-```bash
-DOMAIN=mydomain.tld
-CLOUDFLARE_API_KEY=CHANGE_ME
-ENABLE_PROXY=false
-```
-
-First, the domain has to be configured. Secondly, an API key is required that grants write access to the DNS zone corresponding to the above domain. The domain must be registered for the account for which the API token is valid. Finally, DNS records can be proxied by Cloudflare.
+- `API_KEY`: Cloudflare API key that has write permissions on the domains DNS zone
+- `ZONE`: the DNS zone in which the domain resides you want to use. This should be the domain that you have registered/purchased, e.g. `mydomain.tld`
+- `SUBDOMAIN`: optionally, use a subdomain. To use e.g. `test.mydomain.tld`, set this to `test`. For the wildcard container, set this to `*.test`, ensure that the `*` is still present!
+- `PROXIED`: enable proxied DNS records. See notes below.
 
 When the proxy is enabled, Cloudflare acts as a cloud-based reverse proxy; the public DNS records resolve to a public Cloudflare IP address, rather than your home network's public IP. Requests are then sent to Cloudflare rather than your home network. Cloudflare then terminates the TLS connection for you, before re-encrypting the requests and sending them to your reverse proxy. 
 

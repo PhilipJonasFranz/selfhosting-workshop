@@ -4,19 +4,21 @@ services:
     container_name: cloudflare-ddns-root
     restart: always
     environment:
-      - API_KEY=${CLOUDFLARE_API_KEY}
-      - ZONE=${ZONE}
+      - API_KEY=CHANGE_ME # ⚠️ Change to API key that has write permissions for DNS zone of domain
+      - ZONE=${ZONE} # ⚠️ set this to registered domain, e.g. mydomain.tld
+      # Create DNS record for [<subdomain>.]mydomain.tld.
+      #- SUBDOMAIN= # ⚠️ uncomment and set this to a subdomain if you want, e.g. 'test'. The created record will be for 'test.mydomain.tld'
       # Enable DNS proxy to proxy traffic through cloudflare. Can be useful to hide own public IP and protect against attacks
-      - PROXIED=${ENABLE_PROXY}
+      - PROXIED=false # ⚠️ see notes in readme about proxied DNS records
 
   cloudflare-ddns-wcard:
     image: oznu/cloudflare-ddns:latest
     container_name: cloudflare-ddns-wcard
     restart: always
     environment:
-      - API_KEY=${CLOUDFLARE_API_KEY}
-      - ZONE=${ZONE}
-      # Create DNS record for *[.<subdomain>].mydomain.tld. Automatically resolves all DNS queries for subdomain to same IP.
-      - SUBDOMAIN=${SUBDOMAIN}
+      - API_KEY=CHANGE_ME # ⚠️ Change to API key that has write permissions for DNS zone of domain
+      - ZONE= # ⚠️ set this to registered domain, e.g. mydomain.tld
+      # Create wildcard DNS record for *.[<subdomain>.]mydomain.tld. Automatically resolves all DNS queries for subdomain to same IP.
+      - SUBDOMAIN=* # ⚠️ if you use a subdomain, update this to e.g. '*.test'. The created record will be for '*.test.mydomain.tld'
       # Enable DNS proxy to proxy traffic through cloudflare. Can be useful to hide own public IP and protect against attacks
-      - PROXIED=${ENABLE_PROXY}
+      - PROXIED=false # ⚠️ see notes in readme about proxied DNS records

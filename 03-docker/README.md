@@ -22,6 +22,20 @@ To install Docker, run:
 curl -fsSL https://get.docker.com | sudo bash
 ```
 
+⚠️ **Important**: There is a breaking change with Docker version 29, which increases the minimum required API version, which breaks downstream projects such as Traefik. Until a fix is available, as a temporary measurement, downgrade Docker to version 28:
+
+Ubuntu 22.04:
+
+```bash
+sudo apt-get install docker-ce=5:28.5.2-1~ubuntu.22.04~jammy docker-ce-cli=5:28.5.2-1~ubuntu.22.04~jammy containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+Ubuntu 24.04:
+
+```bash
+sudo apt-get install docker-ce=5:28.5.2-1~ubuntu.24.04~noble docker-ce-cli=5:28.5.2-1~ubuntu.24.04~noble containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
 # Docker Images
 
 A Docker image is a stack of read-only layers, plus metadata, that describes how to run the container. Each layer is a filesystem that adds files to the image. Each layer is immutable. The base layer is a minimal OS userspace, e.g., `alpine` or `ubuntu`, but not a full OS or kernel.

@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       - API_KEY=${CLOUDFLARE_API_KEY}
-      - ZONE=${DOMAIN}
+      - ZONE=${ZONE}
       # Enable DNS proxy to proxy traffic through cloudflare. Can be useful to hide own public IP and protect against attacks
       - PROXIED=${ENABLE_PROXY}
 
@@ -15,8 +15,8 @@ services:
     restart: always
     environment:
       - API_KEY=${CLOUDFLARE_API_KEY}
-      - ZONE=${DOMAIN}
-      # Create DNS record for *.mydomain.tld. Automatically resolves all DNS queries for subdomain to same IP.
-      - SUBDOMAIN=*
+      - ZONE=${ZONE}
+      # Create DNS record for *[.<subdomain>].mydomain.tld. Automatically resolves all DNS queries for subdomain to same IP.
+      - SUBDOMAIN=${SUBDOMAIN}
       # Enable DNS proxy to proxy traffic through cloudflare. Can be useful to hide own public IP and protect against attacks
       - PROXIED=${ENABLE_PROXY}

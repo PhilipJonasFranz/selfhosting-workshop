@@ -2,7 +2,7 @@
 
 This section concludes the self-hosting workshop. However, there is much more to learn! If you have questions or would like to explore a topic, feel free to ask, and we can take a look at it if time permits.
 
-If you decide to start self-hosting at home, I hope the knowledge you gained today will help you to get started and have confidence in your infrastructure.
+If you decide to start self-hosting at home, I hope the knowledge you gained will help you to get started and have confidence in your infrastructure.
 
 # Continue on the Homelab Journey
 

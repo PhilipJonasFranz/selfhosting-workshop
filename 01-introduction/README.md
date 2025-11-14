@@ -2,7 +2,7 @@
 
 Welcome to the self-hosting workshop! In the workshop, we'll explore how to take control of your own digital services by self-hosting them, rather than relying on cloud services.
 
-You'll learn the fundamentals of how to deploy services from within your home network with Docker, how to obtain SSL certificates, how to secure them with Authentication, and how to expose or access them if you are not home. We will also discuss other topics, such as backups. This workshop is open-ended, and if you are interested in a specific topic, please don't hesitate to ask us. Maybe we even have the option to experiment with the others together.
+You'll learn the fundamentals of how to deploy services from within your home network with Docker, how to obtain SSL certificates, how to secure them with Authentication, and how to expose or access them if you are not home. We will also discuss other topics, such as backups.
 
 The goal of this workshop is for you to become comfortable with self-hosting on your own infrastructure and to take that knowledge home to start your self-hosting journey.
 
@@ -41,7 +41,7 @@ To self-host, you need:
 - a software stack
 - power
 
-For a basic home server, almost anything will do - for example, a Raspberry Pi, an old Desktop PC, or a mini-PC. You can find old, used hardware for relatively cheap on eBay. Personally, I would recommend devices like the Dell OptiPlex line or devices from the [Tiny, Mini, Micro](https://www.servethehome.com/introducing-project-tinyminimicro-home-lab-revolution/) line, some of which we have available at the workshop for you to try out. These devices are practically silent, are pretty efficient, and offer much more performance in comparison to RPis, especially when considering their price. Additionally, they are x86-based, which is an advantage, as many services are not available for the ARM architecture that RPis use. The desktop variant of the OptiPlex series can also be attractive and a great starting point, as it offers more expansion than a micro form-factor device.
+For a basic home server, almost anything will do - for example, a Raspberry Pi, an old Desktop PC, or a mini-PC. You can find old, used hardware for relatively cheap on eBay. Personally, I would recommend devices like the Dell OptiPlex line or devices from the [Tiny, Mini, Micro](https://www.servethehome.com/introducing-project-tinyminimicro-home-lab-revolution/) line. These devices are practically silent, are pretty efficient, and offer much more performance in comparison to RPis, especially when considering their price. Additionally, they are x86-based, which is an advantage, as many services are not available for the ARM architecture that RPis use. The desktop variant of the OptiPlex series can also be attractive and a great starting point, as it offers more expansion than a micro form-factor device.
 
 For storage, you can either use SSDs for more speed at the cost of capacity, or use slower HDDs (spinning rust) for larger storage needs. Of course, a mix of the two can also be a good choice. I generally recommend using SSDs unless you need more storage, as they can last longer than HDDs, have lower power consumption, and offer higher speeds. You can also buy them used with more confidence that they will not immediately break.
 
@@ -49,7 +49,7 @@ Regarding networking, anything Gigabit is fine. 10 gigabit (10G) networking is f
 
 When choosing your software stack, there is no right or wrong (mostly). The most obvious choice is to use a flavor of Linux; however, using Windows can also be a valid option. I choose free and open-source software if possible, as this leaves you with the highest amount of control and transparency over what is actually running on your devices. You can run your services either bare metal, as containers, or use Virtual Machines (VMs). This mostly comes down to preference. Running services natively is the most performant, but requires the highest amount of effort to manage. Containerization, for example with Docker, only marginally decreases performance, but can drastically simplify management. Running services in VMs is the least performant option, but it offers the highest degree of flexibility and makes management and administration tasks, such as backups, very easy. We will be choosing Docker for this workshop as it is a beginner-friendly middle ground and a great option for most situations.
 
-Finally, you need to power your infrastructure. And don't worry, you can get very far with very little power. For today's workshop, we have a power measurement device available. If you are interested in determining the power consumption of a small PC or switch, feel free to measure and calculate your monthly power cost using a website like [this](https://www.wiwo.de/tools/stromkostenrechner/).
+Finally, you need to power your infrastructure. And don't worry, you can get very far with very little power. If you are interested in determining the power consumption of a small PC or switch, you can use a small power measurement device like a Shelly Plug to measure the power consumption, and calculate your monthly power cost using a website like [this](https://www.wiwo.de/tools/stromkostenrechner/).
 
 # What is a homelab, and do I need one?
 

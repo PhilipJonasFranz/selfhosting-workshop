@@ -268,7 +268,7 @@ After completing the setup, you can pair your mobile device or manually upload p
 
 # Nextcloud
 
-Nextcloud is a suite of tools designed to create file hosting services. If you are using Dropbox or Google Drive, you'll feel right at home with Nextcloud. Most participants of this workshop will likely have used Nextcloud, so I'll skip a more in-depth presentation of the app.
+Nextcloud is a suite of tools designed to create file hosting services. If you are using Dropbox or Google Drive, you'll feel right at home with Nextcloud.
 
 To run Nextcloud in Docker, copy the configuration files at `containers/nextcloud` to your server. You need to change some environment variables:
 

@@ -46,7 +46,7 @@ Both queries should result in the IP of the Docker server where Traefik will be 
 
 The Automated Certificate Management Environment (ACME) is a protocol designed to automate interactions between certificate authorities and web servers. In our case, Traefik acts as the web-server, and [Let's Encrypt](https://letsencrypt.org/) is the CA.
 
-As previously stated, the HTTP challenge is only possible with a public web server; hence, we use the DNS challenge. As the domain for this workshop is registered with Cloudflare, we will use Cloudflare's DNS servers to complete the challenge. Hence, Traefik needs a way to update a DNS record for the challenge, which is done by supplying a Cloudflare account email and API token as environment variables:
+As previously stated, the HTTP challenge is only possible with a public web server; hence, we use the DNS challenge. For this workshop, we assume a domain that is registered with Cloudflare, hence, we will use Cloudflare's DNS servers to complete the challenge. Hence, Traefik needs a way to update a DNS record for the challenge, which is done by supplying a Cloudflare account email and API token as environment variables:
 
 ```yaml
 services:

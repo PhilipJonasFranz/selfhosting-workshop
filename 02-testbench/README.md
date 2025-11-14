@@ -1,10 +1,10 @@
 # 2 - Testbench
 
-For this workshop, we provide you with the hardware and infrastructure to experiment with self-hosting. Let's take a look at the testbench and topology for each group:
+Let's take a look at the example testbench we will be using: 
 
 ![testbench](images/home-network.png)
 
-For this workshop, we emulate a typical home network with a FRITZ!Box and a local, private IP range, `192.168.178.0/24`. The FRITZ!Box serves as the gateway and has the IP address `192.168.178.1`. If you are connected to the home network, you can visit the Web-UI of the FRITZ!Box in your browser, or click [here](http://192.168.178.1). Additionally, the FRITZ!Box receives a public, static IPv4 address, in our case, from the HRZ. In a real home network, this IP would be assigned by your ISP, for example, Deutsche Telekom. 
+For this workshop, we assume a typical home network with a FRITZ!Box and a local, private IP range, `192.168.178.0/24`. The FRITZ!Box serves as the gateway and has the IP address `192.168.178.1`. If you are connected to the home network, you can visit the Web-UI of the FRITZ!Box in your browser, or click [here](http://192.168.178.1). Additionally, the FRITZ!Box receives a public IPv4 address by your ISP, for example, Deutsche Telekom. 
 
 The components in the diagram are:
 
@@ -27,7 +27,7 @@ Either way, you **must** ensure that your servers have a static IP in the intern
 
 # Services Architecture Overview
 
-We will deploy a significant number of services today. We will utilize multiple servers to achieve separation of concerns and a clear distinction of roles between different devices. While the placement of the services on devices is primarily up to you, I suggest the following placement:
+We will deploy a significant number of services as part of this workshop. We will utilize multiple servers to achieve separation of concerns and a clear distinction of roles between different devices. While the placement of the services on devices is primarily up to you, I suggest the following placement:
 
 ![selfhosting-overview](images/selfhosting-overview.png)
 
@@ -41,7 +41,7 @@ To start, equip yourself with hardware. Ideally, you need:
 - 1 Switch
 - 1 Mini-PC
 - 2 Raspberry Pis with SD-Cards
-- Power Cables (ensure correct Voltage and Ampere, if unsure ask the Workshop supervisor)
+- Power Cables (ensure correct Voltage and Ampere)
 - Ethernet Cables
 
 If there are no Mini-PCs available, two RPis are also fine. You should use a RPi 4B with 8GB RAM for the Docker and backup server, while a RPi 3 will work for the Pi-hole just fine.

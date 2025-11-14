@@ -8,9 +8,7 @@ To configure WireGuard in FritzOS, head to `Internet > Freigaben > VPN (WireGuar
 
 Click `Verbindung hinzufügen`, and select `Einzelgerät verbinden`. Enter a name for the connection, e.g., the device name. You are then presented with a QR code, which you need to scan with your mobile phone in the WireGuard app to add the tunnel.
 
-While this is, in theory, everything you need to do to set up Wireguard on the FRITZ!Box. Unfortunately, the tunnel will not work for our test bench, as the FRITZ!Box chooses a random port for the Wireguard server, and not the default port `51820`. In your home network, the tunnel should work at this point. If you would like to try out the tunnel, please ask the workshop organizer, and we may be able to temporarily unblock the randomly chosen port.
-
-As an alternative, we will explore a Dockerized WireGuard server with a minimalistic web UI below.
+As an alternative, we will explore a dockerized WireGuard server with a minimalistic web UI below.
 
 # Docker Setup
 

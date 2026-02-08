@@ -35,7 +35,7 @@ The privacy advantage of using a local recursive resolver like Unbound is that y
 
 # Pi-hole Setup
 
-The following instructions are based on [this](https://ronamosa.io/docs/engineer/LAB/Pi-hole-docker-unbound/) blog article.
+The following instructions are based on [this](https://www.uncommonengineer.com/docs/engineer/LAB/pihole-docker-unbound/) blog article.
 
 To start, copy over all of the files for Pi-hole to the server. Run the setup script with `bash setup.sh`. This script also downloads a file `root.hints`, which lists the IP addresses of the root servers that Unbound should use.
 
